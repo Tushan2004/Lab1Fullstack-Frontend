@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getPatients, createPatient } from "../api/patientsApi.js";
 import PatientNav from "../components/PatientNav.jsx";
 import SendMessageForm from "../components/SendMessagesForm.jsx";
+import NewNotation from "../components/NewNotation.jsx";
 
 
 function Inbox() {
@@ -71,7 +72,7 @@ export default function PatientsPage({currentUser}) {
         {tab === "inbox"  && <Inbox />}
         {tab === "visits" && <VisitHistory />}
         {tab === "account"&& <AccountInfo />}
-        {tab === "notation"&& <div>Här kan du skapa nya anteckningar för patienter.</div>}
+        {tab === "notation"&& <NewNotation/>}
       </div>
     </div>
   );
