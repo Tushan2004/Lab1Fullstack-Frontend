@@ -5,12 +5,22 @@ import "./styles/app.css";
 
 export default function App() {
   const [user, setUser] = useState(() => {
-    try { return JSON.parse(localStorage.getItem("user") || "null"); }
-    catch { return null; }
+    try {
+      return JSON.parse(localStorage.getItem("currentUser") || "null");
+    } catch {
+      return null;
+    }
   });
 
-  function handleLoggedIn(u) { setUser(u); }
-  function logout() { localStorage.removeItem("user"); setUser(null); }
+  function handleLoggedIn(u) {
+    localStorage.setItem("currentUser", JSON.stringify(u)); // ✅ Spara i storage
+    setUser(u);
+  }
+
+  function logout() {
+    localStorage.removeItem("currentUser"); // ❗ samma nyckel
+    setUser(null);
+  }
 
   return (
     <div className="App" style={{ padding: 16 }}>
@@ -24,7 +34,9 @@ export default function App() {
             <span>Logged in as {user.email} ({user.role})</span>
             <button onClick={logout}>Logout</button>
           </div>
-          <PatientsPage />
+
+          <PatientsPage currentUser={user} /> 
+          {/* Skicka med till sidor som behöver det */}
         </>
       )}
     </div>

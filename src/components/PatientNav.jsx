@@ -1,16 +1,21 @@
 import React from "react";
 
-const ITEMS = [
+export default function PatientNav({active, onChange, currentUser}) {
+  
+  const isPractitioner = currentUser.role === "DOCTOR" || currentUser.role === "STAFF";
+
+  const ITEMS = [
   { key: "send",   label: "Skicka meddelande" },
   { key: "inbox",  label: "Mina meddelanden" },
   { key: "visits", label: "Träff-historik" },
   { key: "account",label: "Mina uppgifter" },
-  { key: "notation", label: "Ny anteckning" },
-
 ];
 
-export default function PatientNav({ active, onChange }) {
-  return (
+if (isPractitioner) {
+  ITEMS.push({ key: "notation", label: "Ny anteckning" });
+}
+
+return (
     <nav style={styles.bar}>
       {ITEMS.map(it => (
         <button
@@ -26,7 +31,10 @@ export default function PatientNav({ active, onChange }) {
       ))}
     </nav>
   );
+
 }
+
+
 
 const styles = {
   bar: {
