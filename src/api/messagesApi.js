@@ -1,0 +1,17 @@
+const BASE = import.meta.env.VITE_API_BASE || "http://localhost:8080";
+
+export async function sendMessage({ senderId, recipientId, message }) {
+  const res = await fetch(`${BASE}/messages`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ senderId, recipientId, message })
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+export async function getMessages(userEmail) {
+  const res = await fetch(`${BASE}/messages?userEmail=${encodeURIComponent(userEmail)}`);
+  if (!res.ok) throw new Error("Failed to fetch messages");
+  return res.json();
+}
