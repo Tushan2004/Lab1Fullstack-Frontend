@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getPatients, createPatient } from "../api/patientsApi.js";
 import PatientNav from "../components/PatientNav.jsx";
 import SendMessageForm from "../components/SendMessagesForm.jsx";
+import NewNotation from "../components/NewNotation.jsx";
 
 
 function Inbox() {
@@ -25,7 +26,7 @@ function SendMessage() {
   );
 }
 
-export default function PatientsPage() {
+export default function PatientsPage({currentUser}) {
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error,   setError]   = useState(null);
@@ -60,13 +61,18 @@ export default function PatientsPage() {
     <div>
       <h2>Patients</h2>
 
-      <PatientNav active={tab} onChange={setTab} />
+      <PatientNav 
+       active={tab} 
+       onChange={setTab}
+       currentUser={currentUser}
+      />
 
       <div style={{ padding: "12px 4px" }}>
         {tab === "send"   && <SendMessage />}
         {tab === "inbox"  && <Inbox />}
         {tab === "visits" && <VisitHistory />}
         {tab === "account"&& <AccountInfo />}
+        {tab === "notation"&& <NewNotation/>}
       </div>
     </div>
   );
