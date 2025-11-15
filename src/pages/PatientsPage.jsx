@@ -3,6 +3,8 @@ import { getPatients, createPatient } from "../api/patientsApi.js";
 import PatientNav from "../components/PatientNav.jsx";
 import SendMessageForm from "../components/SendMessagesForm.jsx";
 import NewNotation from "../components/NewNotation.jsx";
+import MessagesInbox from "../components/MessagesInbox.jsx";
+
 
 
 function Inbox() {
@@ -69,7 +71,7 @@ export default function PatientsPage({currentUser}) {
 
       <div style={{ padding: "12px 4px" }}>
         {tab === "send"   && <SendMessage />}
-        {tab === "inbox"  && <Inbox />}
+        {tab === "inbox" && <MessagesInbox />}
         {tab === "visits" && <VisitHistory />}
         {tab === "account"&& <AccountInfo />}
         {tab === "notation"&& <NewNotation/>}
