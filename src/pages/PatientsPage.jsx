@@ -4,8 +4,7 @@ import PatientNav from "../components/PatientNav.jsx";
 import SendMessageForm from "../components/SendMessagesForm.jsx";
 import NewNotation from "../components/NewNotation.jsx";
 import MessagesInbox from "../components/MessagesInbox.jsx";
-
-
+import AccountInfo from "../components/AccountInfo.jsx"; // <--- behåll denna
 
 function Inbox() {
   return <div>Här visas inkommande/utgående meddelanden.</div>;
@@ -13,10 +12,6 @@ function Inbox() {
 
 function VisitHistory() {
   return <div>Här visas historik över träffar/bokade besök.</div>;
-}
-
-function AccountInfo() {
-  return <div>Här visas användaruppgifter (namn, e-post, roll, osv.).</div>;
 }
 
 function SendMessage() {
@@ -31,10 +26,9 @@ function SendMessage() {
 export default function PatientsPage({currentUser}) {
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error,   setError]   = useState(null);
+  const [error, setError] = useState(null);
 
-  // vilken flik som är aktiv
-  const [tab, setTab] = useState("send"); // "send" | "inbox" | "visits" | "account"
+  const [tab, setTab] = useState("send");
 
   async function load() {
     try {
@@ -57,7 +51,7 @@ export default function PatientsPage({currentUser}) {
   }
 
   if (loading) return <div>Loading…</div>;
-  if (error)   return <div style={{color:"red"}}>Error: {error}</div>;
+  if (error) return <div style={{color:"red"}}>Error: {error}</div>;
 
   return (
     <div>
@@ -70,11 +64,11 @@ export default function PatientsPage({currentUser}) {
       />
 
       <div style={{ padding: "12px 4px" }}>
-        {tab === "send"   && <SendMessage />}
+        {tab === "send" && <SendMessage />}
         {tab === "inbox" && <MessagesInbox />}
         {tab === "visits" && <VisitHistory />}
-        {tab === "account"&& <AccountInfo />}
-        {tab === "notation"&& <NewNotation/>}
+        {tab === "account" && <AccountInfo currentUser={currentUser} />}
+        {tab === "notation" && <NewNotation />}
       </div>
     </div>
   );

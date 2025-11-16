@@ -15,3 +15,9 @@ export async function createPatient(patient) {
   if (!res.ok) throw new Error("Failed to create patient");
   return res.json();
 }
+
+export async function getMyPatientInfo(userId) {
+  const res = await fetch(`${BASE}/patients/me?userId=${userId}`);
+  if (!res.ok) throw new Error("Failed to fetch patient info");
+  return res.json();
+}
