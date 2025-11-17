@@ -51,10 +51,6 @@ export default function SendNotationForm() {
       return;
     }
 
-    if (Number(recipientId) === currentUser.id) {
-      setErr("Du kan inte skicka meddelande till dig själv.");
-      return;
-    }
 
     try {
 
