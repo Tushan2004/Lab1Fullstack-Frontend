@@ -1,23 +1,25 @@
 import { useEffect, useState } from "react";
-import { getPractitioners } from "../api/practitionerApi";
-import { sendMessage } from "../api/messagesApi";
-import { getMessages } from "../api/messagesApi";
+import { sendNotation } from "../api/notationsApi";
+import { getPatients } from "../api/patientsApi";
 
 
-export default function SendMessageForm() {
-  const [practitioners, setPractitioners] = useState([]);
-  const [recipientId, setRecipientId]   = useState("");
-  const [message, setMessage]           = useState("");
-  const [loading, setLoading]           = useState(true);
-  const [err, setErr]                   = useState("");
-  const [success, setSuccess]           = useState(false);
+export default function SendNotationForm() {
+
+    const [patients, setPatietnts]        = useState([]);
+    console.log("patients från backend:", patients);
+    const [notation, setNotation]         = useState("");
+    const [diagnosis, setDiagnosis]       = useState("");
+    const [loading, setLoading]           = useState(true);
+    const [err, setErr]                   = useState("");
+    const [success, setSuccess]           = useState(false);
+    const [recipientId, setRecipientId]   = useState("");
 
   useEffect(() => {
 
     async function load() {
         try {
-        const data = await getPractitioners();
-        setPractitioners(data);
+        const data = await getPatients();
+        setPatietnts(data);
         } catch (e) {
         setErr("Kunde inte hämta användare.");
         } finally {
@@ -36,12 +38,15 @@ export default function SendMessageForm() {
 
     // 1) Hämta inloggad användare från localStorage
     const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    console.log("currentUser:", currentUser);
+    console.log("recipientId (state):", recipientId, " typeof:", typeof recipientId);
+    console.log("Number(recipientId):", Number(recipientId));
     if (!currentUser) {
       setErr("Ingen användare är inloggad.");
       return;
     }
 
-    if (!recipientId || !message.trim()) {
+    if (!recipientId || !notation.trim()) {
       setErr("Välj mottagare och skriv ett meddelande.");
       return;
     }
@@ -52,17 +57,26 @@ export default function SendMessageForm() {
     }
 
     try {
+
+        console.log("Skickar notation payload:", {
+        senderId: currentUser.id,
+        recipientId: Number(recipientId),
+        notation,
+        diagnosis,
+        });
       // 2) Skicka avsändarens user-id + mottagarens id + text
-      await sendMessage({
+      await sendNotation({
         senderId: currentUser.id,        // från login-responsen
         recipientId: Number(recipientId),// välj value={p.user?.id} eller value={p.id} nedan
-        message
+        notation : notation,
+        diagnosis: diagnosis
       });
       setSuccess(true);
-      setMessage("");
+      setNotation("");
       setRecipientId("");
+      setDiagnosis("");
     } catch (e) {
-      setErr(e.message || "Kunde inte skicka meddelandet.");
+      setErr(e.notation || "Kunde inte skicka meddelandet.");
     }
   }
 
@@ -72,31 +86,36 @@ export default function SendMessageForm() {
     <form onSubmit={handleSubmit} style={styles.form}>
       {err && !success && <p style={{color:"red"}}>{err}</p>}
 
-      <label>
-        Mottagare:
-        <select
-          value={recipientId}
-          onChange={(e) => setRecipientId(e.target.value)}
-          style={styles.select}
-          required
-        >
-          <option value="">-- Välj personal --</option>
-          {practitioners.map((p) => (
-            // Välj EN av följande två beroende på vad backend vill ha:
-            // <option key={p.id} value={p.id}>               // Practitioner-id
-            // <option key={p.user?.id} value={p.user?.id}>   // User-id
-            <option key={p.user?.id ?? p.id} value={p.user?.id ?? p.id}>
-              {p.firstName} {p.lastName}
-            </option>
-          ))}
-        </select>
-      </label>
+        <label>
+  Patient:
+  <select
+    value={recipientId}
+    onChange={(e) => setRecipientId(e.target.value)}
+    style={styles.select}
+    required
+  >
+    <option value="">-- Välj patient --</option>
+    {patients.map((p) => (
+      <option key={p.id} value={p.id}>
+        {p.firstName} {p.lastName}
+      </option>
+    ))}
+  </select>
+</label>
 
       <textarea
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        placeholder="Skriv ditt meddelande här..."
+        value={notation}
+        onChange={(e) => setNotation(e.target.value)}
+        placeholder="Skriv Mötesanteckningar här..."
         rows={5}
+        style={styles.textarea}
+        required
+      />
+      <textarea
+        value={diagnosis}
+        onChange={(e) => setDiagnosis(e.target.value)}
+        placeholder="Skriv patientens diagnos här..."
+        rows={1}
         style={styles.textarea}
         required
       />
