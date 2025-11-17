@@ -1,22 +1,21 @@
 import { useEffect, useState } from "react";
 import { getPractitioners } from "../api/practitionerApi";
 import { sendMessage } from "../api/messagesApi";
-import { getMessages } from "../api/messagesApi";
 
-
-export default function SendMessageForm() {
+export default function SendMessageForm({ onMessageSent }) {
   const [practitioners, setPractitioners] = useState([]);
-  const [recipientId, setRecipientId]   = useState("");
-  const [message, setMessage]           = useState("");
-  const [loading, setLoading]           = useState(true);
-  const [err, setErr]                   = useState("");
-  const [success, setSuccess]           = useState(false);
+  const [recipientId, setRecipientId] = useState("");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState("");
+  const [success, setSuccess] = useState(false);
 
   useEffect(() => {
     (async () => {
       try {
         const data = await getPractitioners();
-        setPractitioners(data);
+        const validPractitioners = data.filter(p => p.userId);
+        setPractitioners(validPractitioners);
       } catch {
         setErr("Kunde inte hämta användare.");
       } finally {
@@ -30,7 +29,6 @@ export default function SendMessageForm() {
     setSuccess(false);
     setErr("");
 
-    // 1) Hämta inloggad användare från localStorage
     const currentUser = JSON.parse(localStorage.getItem("currentUser"));
     if (!currentUser) {
       setErr("Ingen användare är inloggad.");
@@ -48,15 +46,18 @@ export default function SendMessageForm() {
     }
 
     try {
-      // 2) Skicka avsändarens user-id + mottagarens id + text
       await sendMessage({
-        senderId: currentUser.id,        // från login-responsen
-        recipientId: Number(recipientId),// välj value={p.user?.id} eller value={p.id} nedan
+        senderId: currentUser.id,
+        recipientId: Number(recipientId),
         message
       });
       setSuccess(true);
       setMessage("");
       setRecipientId("");
+
+      // Triggera uppdatering i MessagesInbox
+      if (onMessageSent) onMessageSent();
+
     } catch (e) {
       setErr(e.message || "Kunde inte skicka meddelandet.");
     }
@@ -66,7 +67,7 @@ export default function SendMessageForm() {
 
   return (
     <form onSubmit={handleSubmit} style={styles.form}>
-      {err && !success && <p style={{color:"red"}}>{err}</p>}
+      {err && !success && <p style={{ color: "red" }}>{err}</p>}
 
       <label>
         Mottagare:
@@ -77,12 +78,9 @@ export default function SendMessageForm() {
           required
         >
           <option value="">-- Välj personal --</option>
-          {practitioners.map((p) => (
-            // Välj EN av följande två beroende på vad backend vill ha:
-            // <option key={p.id} value={p.id}>               // Practitioner-id
-            // <option key={p.user?.id} value={p.user?.id}>   // User-id
-            <option key={p.user?.id ?? p.id} value={p.user?.id ?? p.id}>
-              {p.firstName} {p.lastName}
+          {practitioners.map(p => (
+            <option key={p.userId} value={p.userId}>
+              {p.firstName} {p.lastName} ({p.email})
             </option>
           ))}
         </select>

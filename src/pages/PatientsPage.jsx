@@ -1,34 +1,106 @@
 import { useEffect, useState } from "react";
-import { getPatients, createPatient } from "../api/patientsApi.js";
+import { getPatients, createPatient, getFullPatientInfo } from "../api/patientsApi.js";
 import PatientNav from "../components/PatientNav.jsx";
 import SendMessageForm from "../components/SendMessagesForm.jsx";
 import NewNotation from "../components/NewNotation.jsx";
 import MessagesInbox from "../components/MessagesInbox.jsx";
-import AccountInfo from "../components/AccountInfo.jsx"; // <--- behåll denna
+import AccountInfo from "../components/AccountInfo.jsx";
 
-function Inbox() {
-  return <div>Här visas inkommande/utgående meddelanden.</div>;
+function Inbox({ inboxTrigger }) {
+  return <MessagesInbox updateTrigger={inboxTrigger} />;
 }
 
 function VisitHistory() {
   return <div>Här visas historik över träffar/bokade besök.</div>;
 }
 
-function SendMessage() {
+function SendMessage({ onMessageSent }) {
   return (
     <div>
       <h3>Skicka meddelande</h3>
-      <SendMessageForm />
+      <SendMessageForm onMessageSent={onMessageSent} />
     </div>
   );
 }
 
-export default function PatientsPage({currentUser}) {
+// Komponent för att visa full patientinfo (endast för läkare)
+function FullPatientInfo({ currentUser }) {
+  const [patients, setPatients] = useState([]);
+  const [selectedPatientId, setSelectedPatientId] = useState(null);
+  const [info, setInfo] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState("");
+
+  useEffect(() => {
+    async function loadPatients() {
+      try {
+        const data = await getPatients();
+        setPatients(data);
+      } catch (e) {
+        setErr("Kunde inte hämta patienter.");
+      }
+    }
+    loadPatients();
+  }, []);
+
+  useEffect(() => {
+    if (!selectedPatientId) return;
+
+    async function loadInfo() {
+      setLoading(true);
+      setErr("");
+      try {
+        const data = await getFullPatientInfo(selectedPatientId, currentUser.id);
+        setInfo(data);
+      } catch (e) {
+        setErr("Kunde inte hämta full patientinfo.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadInfo();
+  }, [selectedPatientId, currentUser.id]);
+
+  if (err) return <p style={{ color: "red" }}>{err}</p>;
+  if (loading) return <p>Laddar patientinformation…</p>;
+
+  return (
+    <div>
+      <h3>Full patientinformation</h3>
+      <label>
+        Välj patient:
+        <select
+          value={selectedPatientId || ""}
+          onChange={(e) => setSelectedPatientId(e.target.value)}
+        >
+          <option value="">-- Välj patient --</option>
+          {patients.map((p) => (
+            <option key={p.id} value={p.id}>
+              {p.firstName} {p.lastName}
+            </option>
+          ))}
+        </select>
+      </label>
+
+      {info && (
+        <div style={{ marginTop: 12 }}>
+          <p><strong>Förnamn:</strong> {info.firstName}</p>
+          <p><strong>Efternamn:</strong> {info.lastName}</p>
+          <p><strong>Email:</strong> {info.email}</p>
+          <p><strong>Roll:</strong> {info.role}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function PatientsPage({ currentUser }) {
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
   const [tab, setTab] = useState("send");
+  const [inboxTrigger, setInboxTrigger] = useState(0); // används för att uppdatera inbox
 
   async function load() {
     try {
@@ -50,25 +122,31 @@ export default function PatientsPage({currentUser}) {
     await load();
   }
 
+  // Funktion som triggar reload i inbox när ett nytt meddelande skickas
+  function handleMessageSent() {
+    setInboxTrigger(prev => prev + 1);
+  }
+
   if (loading) return <div>Loading…</div>;
-  if (error) return <div style={{color:"red"}}>Error: {error}</div>;
+  if (error) return <div style={{ color: "red" }}>Error: {error}</div>;
 
   return (
     <div>
       <h2>Patients</h2>
 
       <PatientNav 
-       active={tab} 
-       onChange={setTab}
-       currentUser={currentUser}
+        active={tab} 
+        onChange={setTab}
+        currentUser={currentUser}
       />
 
       <div style={{ padding: "12px 4px" }}>
-        {tab === "send" && <SendMessage />}
-        {tab === "inbox" && <MessagesInbox />}
+        {tab === "send" && <SendMessage onMessageSent={handleMessageSent} />}
+        {tab === "inbox" && <Inbox inboxTrigger={inboxTrigger} />}
         {tab === "visits" && <VisitHistory />}
         {tab === "account" && <AccountInfo currentUser={currentUser} />}
         {tab === "notation" && <NewNotation />}
+        {tab === "patientInfo" && <FullPatientInfo currentUser={currentUser} />}
       </div>
     </div>
   );

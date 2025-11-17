@@ -10,7 +10,9 @@ export async function sendMessage({ senderId, recipientId, message }) {
   return res.json();
 }
 
-export async function getMessages(email) {
-  const res = await fetch(`${BASE}/messages?userEmail=${email}`);
+// Uppdaterad för userId
+export async function getMessages(userId) {
+  const res = await fetch(`${BASE}/messages?userId=${userId}`);
+  if (!res.ok) throw new Error(await res.text());
   return res.json();
 }
