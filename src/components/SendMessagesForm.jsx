@@ -2,14 +2,15 @@ import { useEffect, useState } from "react";
 import { getPractitioners } from "../api/practitionerApi";
 import { sendMessage } from "../api/messagesApi";
 
-export default function SendMessageForm({ onMessageSent }) {
+export default function SendMessageForm({ onMessageSent, parentId = null, initialRecipientId = "" }) {
   const [practitioners, setPractitioners] = useState([]);
-  const [recipientId, setRecipientId] = useState("");
+  const [recipientId, setRecipientId] = useState(initialRecipientId);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
   const [success, setSuccess] = useState(false);
 
+  // Hämta lista på läkare/övrig personal
   useEffect(() => {
     (async () => {
       try {
@@ -26,8 +27,8 @@ export default function SendMessageForm({ onMessageSent }) {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setSuccess(false);
     setErr("");
+    setSuccess(false);
 
     const currentUser = JSON.parse(localStorage.getItem("currentUser"));
     if (!currentUser) {
@@ -49,15 +50,15 @@ export default function SendMessageForm({ onMessageSent }) {
       await sendMessage({
         senderId: currentUser.id,
         recipientId: Number(recipientId),
-        message
+        message,
+        parentId // null om det är ett nytt meddelande
       });
       setSuccess(true);
       setMessage("");
-      setRecipientId("");
+      if (!parentId) setRecipientId(""); // töm bara om det är nytt meddelande
 
-      // Triggera uppdatering i MessagesInbox
+      // Trigga uppdatering av meddelanden i inbox
       if (onMessageSent) onMessageSent();
-
     } catch (e) {
       setErr(e.message || "Kunde inte skicka meddelandet.");
     }
@@ -76,6 +77,7 @@ export default function SendMessageForm({ onMessageSent }) {
           onChange={(e) => setRecipientId(e.target.value)}
           style={styles.select}
           required
+          disabled={!!parentId} // Om det är svar, kan man inte ändra mottagare
         >
           <option value="">-- Välj personal --</option>
           {practitioners.map(p => (
@@ -95,8 +97,11 @@ export default function SendMessageForm({ onMessageSent }) {
         required
       />
 
-      <button type="submit" style={styles.button}>Skicka</button>
-      {success && <p style={{ color: "green" }}>Meddelandet skickades!</p>}
+      <button type="submit" style={styles.button}>
+        {parentId ? "Svara" : "Skicka"}
+      </button>
+
+      {success && <p style={{ color: "green" }}>{parentId ? "Svar skickat!" : "Meddelandet skickades!"}</p>}
     </form>
   );
 }

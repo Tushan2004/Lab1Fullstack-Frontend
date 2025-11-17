@@ -5,13 +5,14 @@ import SendMessageForm from "../components/SendMessagesForm.jsx";
 import NewNotation from "../components/NewNotation.jsx";
 import MessagesInbox from "../components/MessagesInbox.jsx";
 import AccountInfo from "../components/AccountInfo.jsx";
+import VisitHistory from "../components/VisitHistory.jsx";
 
 function Inbox({ inboxTrigger }) {
   return <MessagesInbox updateTrigger={inboxTrigger} />;
 }
 
-function VisitHistory() {
-  return <div>Här visas historik över träffar/bokade besök.</div>;
+function VisitHistoryTab({ inboxTrigger, currentUser }) {
+  return <VisitHistory updateTrigger={inboxTrigger} currentUser={currentUser} />;
 }
 
 function SendMessage({ onMessageSent }) {
@@ -143,7 +144,7 @@ export default function PatientsPage({ currentUser }) {
       <div style={{ padding: "12px 4px" }}>
         {tab === "send" && <SendMessage onMessageSent={handleMessageSent} />}
         {tab === "inbox" && <Inbox inboxTrigger={inboxTrigger} />}
-        {tab === "visits" && <VisitHistory />}
+        {tab === "visits" && <VisitHistoryTab inboxTrigger={inboxTrigger} currentUser={currentUser} />}
         {tab === "account" && <AccountInfo currentUser={currentUser} />}
         {tab === "notation" && <NewNotation />}
         {tab === "patientInfo" && <FullPatientInfo currentUser={currentUser} />}
