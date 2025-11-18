@@ -13,12 +13,12 @@ export default function App() {
   });
 
   function handleLoggedIn(u) {
-    localStorage.setItem("currentUser", JSON.stringify(u)); // ✅ Spara i storage
+    localStorage.setItem("currentUser", JSON.stringify(u)); 
     setUser(u);
   }
 
   function logout() {
-    localStorage.removeItem("currentUser"); // ❗ samma nyckel
+    localStorage.removeItem("currentUser"); 
     setUser(null);
   }
 

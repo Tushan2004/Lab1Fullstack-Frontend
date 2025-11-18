@@ -10,11 +10,9 @@ export default function PatientNav({ active, onChange, currentUser }) {
     { key: "account",label: "Mina uppgifter" },
   ];
 
-  // Flik för läkare / personal
   if (isPractitioner) {
     ITEMS.push({ key: "notation", label: "Ny anteckning" });
 
-    // Endast läkare får se full patientinfo
     if (currentUser.role === "DOCTOR") {
       ITEMS.push({ key: "patientInfo", label: "Full Patient Info" });
     }

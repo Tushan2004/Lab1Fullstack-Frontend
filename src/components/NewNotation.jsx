@@ -36,7 +36,7 @@ export default function SendNotationForm() {
     setSuccess(false);
     setErr("");
 
-    // 1) Hämta inloggad användare från localStorage
+
     const currentUser = JSON.parse(localStorage.getItem("currentUser"));
     console.log("currentUser:", currentUser);
     console.log("recipientId (state):", recipientId, " typeof:", typeof recipientId);
@@ -60,10 +60,10 @@ export default function SendNotationForm() {
         notation,
         diagnosis,
         });
-      // 2) Skicka avsändarens user-id + mottagarens id + text
+      
       await sendNotation({
-        senderId: currentUser.id,        // från login-responsen
-        recipientId: Number(recipientId),// välj value={p.user?.id} eller value={p.id} nedan
+        senderId: currentUser.id,        
+        recipientId: Number(recipientId),
         notation : notation,
         diagnosis: diagnosis
       });

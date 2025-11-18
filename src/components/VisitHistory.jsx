@@ -12,10 +12,10 @@ export default function VisitHistory({ updateTrigger, currentUser }) {
       setErr("");
 
       try {
-        const data = await getNotations(currentUser.email); // Skicka email istället för id
+        const data = await getNotations(currentUser.email); 
         console.log("Notations API:", data);
 
-        // Om backend bara skickar senderId/recipientId behöver vi mappar till namn
+        
         const mapped = data.map(n => ({
           id: n.id,
           note: n.notation,

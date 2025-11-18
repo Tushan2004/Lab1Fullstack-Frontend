@@ -5,7 +5,7 @@ export default function MessagesInbox({ refreshTrigger }) {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
-  const [replyText, setReplyText] = useState({}); // håller svar för varje meddelande
+  const [replyText, setReplyText] = useState({}); 
 
   useEffect(() => {
     async function load() {
@@ -21,7 +21,6 @@ export default function MessagesInbox({ refreshTrigger }) {
         const userId = currentUser.id;
         const data = await getMessages(userId);
 
-        // Filtrera bort svar, visa bara originalmeddelanden
         setMessages(data.filter(m => m.parentId === null));
       } catch (e) {
         console.error(e);
@@ -88,7 +87,6 @@ function MessageItem({ message, replyText, setReplyText }) {
         parentId: message.id,
       });
 
-      // Lägg till svaret direkt i state
       setReplies(prev => [...prev, newReply]);
       setReplyText(prev => ({ ...prev, [message.id]: "" }));
     } catch (e) {
