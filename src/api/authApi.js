@@ -6,7 +6,7 @@ export async function register({ email, password, role, firstName, lastName }) {
   const userRes = await fetch(`${USER_BASE}/users/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password, role }),
+    body: JSON.stringify({ email, password, role }), 
   });
 
   const userData = await userRes.json().catch(() => null);
