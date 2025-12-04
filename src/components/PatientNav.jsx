@@ -13,12 +13,15 @@ export default function PatientNav({ active, onChange, currentUser }) {
 
     if (currentUser.role === "DOCTOR") {
       ITEMS.push({ key: "patientInfo", label: "Patient Info" });
+      
+      ITEMS.push({ key: "images", label: "Bildhantering" });
     }
   }
+  
   if (currentUser.role === "PATIENT") {
       ITEMS.push({ key: "account",label: "Mina uppgifter" });
       ITEMS.push({ key: "send",   label: "Skicka meddelande" });
-    }
+  }
 
   return (
     <nav style={styles.bar}>
@@ -48,6 +51,7 @@ const styles = {
     top: 0,
     background: "#fff",
     zIndex: 5,
+    flexWrap: "wrap", 
   },
   btn: {
     padding: "8px 12px",

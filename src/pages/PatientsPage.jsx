@@ -6,6 +6,7 @@ import NewNotation from "../components/NewNotation.jsx";
 import MessagesInbox from "../components/MessagesInbox.jsx";
 import AccountInfo from "../components/AccountInfo.jsx";
 import VisitHistory from "../components/VisitHistory.jsx";
+import ImageManager from "../components/ImageManager.jsx"; 
 
 function Inbox({ inboxTrigger }) {
   return <MessagesInbox updateTrigger={inboxTrigger} />;
@@ -146,6 +147,7 @@ export default function PatientsPage({ currentUser }) {
         {tab === "account" && <AccountInfo currentUser={currentUser} />}
         {tab === "notation" && <NewNotation />}
         {tab === "patientInfo" && <FullPatientInfo currentUser={currentUser} />}
+        {tab === "images" && <ImageManager />}
       </div>
     </div>
   );
