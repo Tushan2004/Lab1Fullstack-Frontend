@@ -19,10 +19,10 @@ export default function AuthPage({ onLoggedIn }) {
 
       if (mode === "signup") {
         res = await register({ email, password, role, firstName, lastName });
-        // normalize register response
+       
         const currentUser = {
           id: res.userId,
-          email,               // backend didn’t return email in RegisterResponse
+          email,               
           role: res.role,
           patientId: res.patientId ?? null,
           practitionerId: res.practitionerId ?? null,
@@ -32,7 +32,7 @@ export default function AuthPage({ onLoggedIn }) {
 
       } else {
         res = await login({ email, password });
-        // normalize login response
+      
         const currentUser = {
           id: res.id,
           email: res.email,

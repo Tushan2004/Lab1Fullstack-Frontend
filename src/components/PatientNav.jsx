@@ -4,19 +4,21 @@ export default function PatientNav({ active, onChange, currentUser }) {
   const isPractitioner = currentUser.role === "DOCTOR" || currentUser.role === "STAFF";
 
   const ITEMS = [
-    { key: "send",   label: "Skicka meddelande" },
     { key: "inbox",  label: "Mina meddelanden" },
     { key: "visits", label: "Träff-historik" },
-    { key: "account",label: "Mina uppgifter" },
   ];
 
   if (isPractitioner) {
     ITEMS.push({ key: "notation", label: "Ny anteckning" });
 
     if (currentUser.role === "DOCTOR") {
-      ITEMS.push({ key: "patientInfo", label: "Full Patient Info" });
+      ITEMS.push({ key: "patientInfo", label: "Patient Info" });
     }
   }
+  if (currentUser.role === "PATIENT") {
+      ITEMS.push({ key: "account",label: "Mina uppgifter" });
+      ITEMS.push({ key: "send",   label: "Skicka meddelande" });
+    }
 
   return (
     <nav style={styles.bar}>

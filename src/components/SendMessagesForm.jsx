@@ -10,7 +10,6 @@ export default function SendMessageForm({ onMessageSent, parentId = null, initia
   const [err, setErr] = useState("");
   const [success, setSuccess] = useState(false);
 
-  // Hämta lista på läkare/övrig personal
   useEffect(() => {
     (async () => {
       try {
@@ -51,13 +50,13 @@ export default function SendMessageForm({ onMessageSent, parentId = null, initia
         senderId: currentUser.id,
         recipientId: Number(recipientId),
         message,
-        parentId // null om det är ett nytt meddelande
+        parentId 
       });
       setSuccess(true);
       setMessage("");
-      if (!parentId) setRecipientId(""); // töm bara om det är nytt meddelande
+      if (!parentId) setRecipientId(""); 
 
-      // Trigga uppdatering av meddelanden i inbox
+    
       if (onMessageSent) onMessageSent();
     } catch (e) {
       setErr(e.message || "Kunde inte skicka meddelandet.");
@@ -77,7 +76,7 @@ export default function SendMessageForm({ onMessageSent, parentId = null, initia
           onChange={(e) => setRecipientId(e.target.value)}
           style={styles.select}
           required
-          disabled={!!parentId} // Om det är svar, kan man inte ändra mottagare
+          disabled={!!parentId} 
         >
           <option value="">-- Välj personal --</option>
           {practitioners.map(p => (

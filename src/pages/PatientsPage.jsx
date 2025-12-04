@@ -24,7 +24,6 @@ function SendMessage({ onMessageSent }) {
   );
 }
 
-// Komponent för att visa full patientinfo (endast för läkare)
 function FullPatientInfo({ currentUser }) {
   const [patients, setPatients] = useState([]);
   const [selectedPatientId, setSelectedPatientId] = useState(null);
@@ -100,8 +99,8 @@ export default function PatientsPage({ currentUser }) {
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [tab, setTab] = useState("send");
-  const [inboxTrigger, setInboxTrigger] = useState(0); // används för att uppdatera inbox
+  const [tab, setTab] = useState("inbox");
+  const [inboxTrigger, setInboxTrigger] = useState(0); 
 
   async function load() {
     try {
@@ -123,7 +122,6 @@ export default function PatientsPage({ currentUser }) {
     await load();
   }
 
-  // Funktion som triggar reload i inbox när ett nytt meddelande skickas
   function handleMessageSent() {
     setInboxTrigger(prev => prev + 1);
   }

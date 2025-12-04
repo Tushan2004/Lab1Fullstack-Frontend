@@ -1,4 +1,4 @@
-const BASE = import.meta.env.VITE_API_BASE || "http://localhost:8080";
+const BASE = import.meta.env.VITE_API_BASE || "http://localhost:8081";
 
 // Hämta alla practitioners (läkare + övrig personal)
 export async function getPractitioners() {
