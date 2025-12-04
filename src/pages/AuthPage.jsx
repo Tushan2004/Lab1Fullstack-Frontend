@@ -21,9 +21,9 @@ export default function AuthPage({ onLoggedIn }) {
         res = await register({ email, password, role, firstName, lastName });
        
         const currentUser = {
-          id: res.userId,
-          email,               
-          role: res.role,
+          id: res.user.id,
+          email: res.user.email,
+          role: res.user.role,
           patientId: res.patientId ?? null,
           practitionerId: res.practitionerId ?? null,
         };
