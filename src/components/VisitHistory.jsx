@@ -12,7 +12,7 @@ export default function VisitHistory({ updateTrigger, currentUser }) {
       setErr("");
 
       try {
-        const data = await getNotations(currentUser.email); 
+        const data = await getNotations(currentUser.id); 
         console.log("Notations API:", data);
 
         

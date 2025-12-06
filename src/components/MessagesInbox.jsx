@@ -21,7 +21,7 @@ export default function MessagesInbox({ refreshTrigger }) {
         const userId = currentUser.id;
         const data = await getMessages(userId);
 
-        setMessages(data.filter(m => m.parentId === null));
+        setMessages(data.filter(m => m.parent === null));
       } catch (e) {
         console.error(e);
         setErr("Kunde inte hämta meddelanden.");

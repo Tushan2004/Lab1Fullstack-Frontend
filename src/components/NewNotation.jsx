@@ -92,7 +92,7 @@ export default function SendNotationForm() {
   >
     <option value="">-- Välj patient --</option>
     {patients.map((p) => (
-      <option key={p.id} value={p.id}>
+      <option key={p.id} value={p.userId}>
         {p.firstName} {p.lastName}
       </option>
     ))}
