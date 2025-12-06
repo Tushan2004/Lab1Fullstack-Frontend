@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import { getPatients, createPatient, getFullPatientInfo } from "../api/patientsApi.js";
+// 1. NY IMPORT HÄR:
+import { searchPatients } from "../api/searchApi.js"; 
+
 import PatientNav from "../components/PatientNav.jsx";
 import SendMessageForm from "../components/SendMessagesForm.jsx";
 import NewNotation from "../components/NewNotation.jsx";
@@ -25,6 +28,74 @@ function SendMessage({ onMessageSent }) {
   );
 }
 
+// 2. NY KOMPONENT HÄR: Denna hanterar din Quarkus-sökning
+function SearchPatientsTab() {
+  const [name, setName] = useState("");
+  const [condition, setCondition] = useState("");
+  const [results, setResults] = useState([]);
+  const [msg, setMsg] = useState("");
+
+  async function handleSearch(e) {
+    e.preventDefault();
+    setMsg("Söker...");
+    setResults([]);
+    
+    try {
+      const data = await searchPatients(name, condition);
+      setResults(data);
+      if (data.length === 0) {
+        setMsg("Inga träffar hittades");
+      } else {
+        setMsg("");
+      }
+    } catch (err) {
+      console.error(err);
+      setMsg("Fel: Kunde inte nå sök-tjänsten (Är Quarkus igång på port 8084?)");
+    }
+  }
+
+  return (
+    <div>
+      <h3>Sök Patient</h3>
+      <form onSubmit={handleSearch} style={{ marginBottom: "20px", padding: "10px", border: "1px solid #ddd" }}>
+        <div style={{ marginBottom: "10px" }}>
+          <label style={{ display: "block" }}>Namn:</label>
+          <input 
+            type="text" 
+            value={name} 
+            onChange={(e) => setName(e.target.value)} 
+            placeholder="T.ex. Sven"
+            style={{ padding: "5px", width: "100%" }}
+          />
+        </div>
+        <div style={{ marginBottom: "10px" }}>
+          <label style={{ display: "block" }}>Diagnos:</label>
+          <input 
+            type="text" 
+            value={condition} 
+            onChange={(e) => setCondition(e.target.value)} 
+            placeholder="T.ex. Feber"
+            style={{ padding: "5px", width: "100%" }}
+          />
+        </div>
+        <button type="submit" style={{ padding: "8px 16px", cursor: "pointer" }}>Sök nu</button>
+      </form>
+
+      {msg && <p style={{ color: msg.includes("Fel") ? "red" : "blue" }}>{msg}</p>}
+
+      <div>
+        {results.map((p) => (
+          <div key={p.id} style={{ borderBottom: "1px solid #eee", padding: "10px 0" }}>
+            <strong>{p.firstName} {p.lastName}</strong> 
+            <br />
+            <span style={{ fontSize: "0.9em", color: "#666" }}>User ID: {p.userId}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function FullPatientInfo({ currentUser }) {
   const [patients, setPatients] = useState([]);
   const [selectedPatientId, setSelectedPatientId] = useState(null);
@@ -46,20 +117,14 @@ function FullPatientInfo({ currentUser }) {
 
   useEffect(() => {
     if (!selectedPatientId) return;
-
     async function loadInfo() {
-      setLoading(true);
-      setErr("");
+      setLoading(true); setErr("");
       try {
         const data = await getFullPatientInfo(selectedPatientId, currentUser.id);
         setInfo(data);
-      } catch (e) {
-        setErr("Kunde inte hämta full patientinfo.");
-      } finally {
-        setLoading(false);
-      }
+      } catch (e) { setErr("Kunde inte hämta full patientinfo."); } 
+      finally { setLoading(false); }
     }
-
     loadInfo();
   }, [selectedPatientId, currentUser.id]);
 
@@ -69,21 +134,12 @@ function FullPatientInfo({ currentUser }) {
   return (
     <div>
       <h3>Full patientinformation</h3>
-      <label>
-        Välj patient:
-        <select
-          value={selectedPatientId || ""}
-          onChange={(e) => setSelectedPatientId(e.target.value)}
-        >
-          <option value="">-- Välj patient --</option>
-          {patients.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.firstName} {p.lastName}
-            </option>
-          ))}
-        </select>
-      </label>
-
+      <select value={selectedPatientId || ""} onChange={(e) => setSelectedPatientId(e.target.value)}>
+        <option value="">-- Välj patient --</option>
+        {patients.map((p) => (
+            <option key={p.id} value={p.id}>{p.firstName} {p.lastName}</option>
+        ))}
+      </select>
       {info && (
         <div style={{ marginTop: 12 }}>
           <p><strong>Förnamn:</strong> {info.firstName}</p>
@@ -133,7 +189,6 @@ export default function PatientsPage({ currentUser }) {
   return (
     <div>
       <h2>Patients</h2>
-
       <PatientNav 
         active={tab} 
         onChange={setTab}
@@ -148,6 +203,7 @@ export default function PatientsPage({ currentUser }) {
         {tab === "notation" && <NewNotation />}
         {tab === "patientInfo" && <FullPatientInfo currentUser={currentUser} />}
         {tab === "images" && <ImageManager />}
+        {tab === "search" && <SearchPatientsTab />}
       </div>
     </div>
   );

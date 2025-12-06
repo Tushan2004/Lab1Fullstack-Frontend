@@ -1,6 +1,7 @@
 import React from "react";
 
 export default function PatientNav({ active, onChange, currentUser }) {
+  // Kollar om användaren är läkare eller personal
   const isPractitioner = currentUser.role === "DOCTOR" || currentUser.role === "STAFF";
 
   const ITEMS = [
@@ -11,16 +12,17 @@ export default function PatientNav({ active, onChange, currentUser }) {
   if (isPractitioner) {
     ITEMS.push({ key: "notation", label: "Ny anteckning" });
 
+    ITEMS.push({ key: "search", label: "Sök (Mikrotjänst)" });
+
     if (currentUser.role === "DOCTOR") {
       ITEMS.push({ key: "patientInfo", label: "Patient Info" });
-      
       ITEMS.push({ key: "images", label: "Bildhantering" });
     }
   }
   
   if (currentUser.role === "PATIENT") {
-      ITEMS.push({ key: "account",label: "Mina uppgifter" });
-      ITEMS.push({ key: "send",   label: "Skicka meddelande" });
+      ITEMS.push({ key: "account", label: "Mina uppgifter" });
+      ITEMS.push({ key: "send",    label: "Skicka meddelande" });
   }
 
   return (
